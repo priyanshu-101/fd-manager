@@ -101,7 +101,10 @@ export function FDCard({ fd }: { fd: FD }) {
               </div>
               <div>
                 <h3 className="font-display text-lg text-ink-50">{fd.bank}</h3>
-                <p className="text-ink-400 text-sm">{fd.holder || 'No holder'}{fd.reference && <span className="text-ink-600"> · #{fd.reference}</span>}</p>
+                <p className="text-ink-400 text-sm">
+                  {fd.holder || 'No holder'}
+                  {fd.fdNumber && <span className="text-ink-600"> · #{fd.fdNumber}</span>}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -171,7 +174,19 @@ export function FDCard({ fd }: { fd: FD }) {
           <p className="text-ink-200">Are you sure you want to delete this FD for <span className="text-gold-400 font-medium">{fd.bank}</span>? This action cannot be undone.</p>
           <div className="flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>
-            <Button variant="danger" onClick={() => { deleteFD(fd.id); setConfirmDelete(false); }}>Delete</Button>
+            <Button
+              variant="danger"
+              onClick={async () => {
+                try {
+                  await deleteFD(fd.id);
+                  setConfirmDelete(false);
+                } catch (err) {
+                  window.alert(err instanceof Error ? err.message : 'Delete failed');
+                }
+              }}
+            >
+              Delete
+            </Button>
           </div>
         </div>
       </Modal>

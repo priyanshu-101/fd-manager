@@ -19,7 +19,7 @@ export function FDPage() {
     : [];
 
   const filteredFds = fds.filter((fd) =>
-    [fd.bank, fd.holder, fd.reference, fd.fdType, fd.nominee].some((field) =>
+    [fd.bank, fd.holder, fd.fdNumber, fd.fdType, fd.nominee].some((field) =>
       field?.toLowerCase().includes(search.toLowerCase())
     )
   );
@@ -45,7 +45,7 @@ export function FDPage() {
           <div className="relative">
             <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ink-500" />
             <Input
-              placeholder="Search FDs by bank, holder, reference..."
+              placeholder="Search FDs by bank, holder, FD number..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onFocus={() => setShowSuggestions(true)}

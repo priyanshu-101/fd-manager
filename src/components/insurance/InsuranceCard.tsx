@@ -20,7 +20,7 @@ const typeColors: Record<string, string> = {
 };
 
 export function InsuranceCard({ ins }: { ins: Insurance }) {
-  const { insurances, deleteInsurance } = useStore();
+  const { deleteInsurance } = useStore();
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
   const [renewing, setRenewing] = useState(false);
@@ -32,32 +32,8 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
 
   // Build renewal history
   const getHistory = () => {
-    const history: any[] = [];
-    
-    // Find all ancestors
-    let current = ins;
-    while (current.parentId) {
-      const parent = insurances.find(i => i.id === current.parentId);
-      if (parent) {
-        history.unshift({
-          id: parent.id,
-          label: parent.name,
-          sub: parent.company,
-          date: parent.maturityDate,
-          amount: parent.sumAssured,
-          details: [
-            { label: 'Premium', value: formatINR(parent.annualPremium) },
-            { label: 'Type', value: parent.policyType },
-            { label: 'Start', value: formatDate(parent.startDate) },
-            { label: 'Nominee', value: parent.nominee || '—' },
-          ]
-        });
-        current = parent;
-      } else break;
-    }
-
-    // Add current
-    history.push({
+    return [
+      {
       id: ins.id,
       label: ins.name,
       sub: ins.company,
@@ -70,30 +46,8 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
         { label: 'Start', value: formatDate(ins.startDate) },
         { label: 'Nominee', value: ins.nominee || '—' },
       ]
-    });
-
-    // Find all descendants (future renewals)
-    current = ins;
-    let child = insurances.find(i => i.parentId === current.id);
-    while (child) {
-      history.push({
-        id: child.id,
-        label: child.name,
-        sub: child.company,
-        date: child.maturityDate,
-        amount: child.sumAssured,
-        details: [
-          { label: 'Premium', value: formatINR(child.annualPremium) },
-          { label: 'Type', value: child.policyType },
-          { label: 'Start', value: formatDate(child.startDate) },
-          { label: 'Nominee', value: child.nominee || '—' },
-        ]
-      });
-      current = child;
-      child = insurances.find(i => i.parentId === current.id);
-    }
-
-    return history;
+      },
+    ];
   };
 
   const history = getHistory();
@@ -195,7 +149,19 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
           <p className="text-ink-200">Are you sure you want to delete <span className="text-sky-400 font-medium">{ins.name}</span>? This action cannot be undone.</p>
           <div className="flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>
-            <Button variant="danger" onClick={() => { deleteInsurance(ins.id); setConfirmDelete(false); }}>Delete</Button>
+            <Button
+              variant="danger"
+              onClick={async () => {
+                try {
+                  await deleteInsurance(ins.id);
+                  setConfirmDelete(false);
+                } catch (err) {
+                  window.alert(err instanceof Error ? err.message : 'Delete failed');
+                }
+              }}
+            >
+              Delete
+            </Button>
           </div>
         </div>
       </Modal>

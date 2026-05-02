@@ -4,7 +4,7 @@ import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { useStore } from '@/store';
 import { generateId, calcMaturityAmount } from '@/utils';
-import { FD } from '@/types';
+import { FD, NewFD } from '@/types';
 
 interface FDFormProps {
   initial?: FD;
@@ -23,7 +23,7 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
     maturityDate: isRenewal ? '' : initial?.maturityDate ?? '',
     fdType: initial?.fdType ?? 'Cumulative',
     nominee: initial?.nominee ?? '',
-    reference: initial?.reference ?? '',
+    fdNumber: initial?.fdNumber ?? '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -42,10 +42,10 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
     const isEdit = initial && !isRenewal;
-    
+
     let history = initial?.history || [];
     if (isRenewal && initial) {
       // Capture current state before updating for renewal
@@ -56,13 +56,12 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
         startDate: initial.startDate,
         maturityDate: initial.maturityDate,
         fdType: initial.fdType,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
       history = [...history, historyEntry];
     }
 
-    const fd: FD = {
-      id: (isEdit || isRenewal) ? initial!.id : generateId(),
+    const fd: NewFD = {
       parentId: initial?.parentId, // Keep parentId if it exists
       bank: form.bank,
       holder: form.holder,
@@ -72,14 +71,18 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
       maturityDate: form.maturityDate,
       fdType: form.fdType as FD['fdType'],
       nominee: form.nominee,
-      reference: form.reference,
-      createdAt: isEdit ? initial.createdAt : (initial?.createdAt || new Date().toISOString()),
-      history: history
+      fdNumber: form.fdNumber,
+      createdAt: isEdit ? initial.createdAt : initial?.createdAt || new Date().toISOString(),
+      history,
     };
 
-    if (isEdit || isRenewal) updateFD(initial!.id, fd);
-    else addFD(fd);
-    onClose();
+    try {
+      if (isEdit || isRenewal) await updateFD(initial!.id, fd);
+      else await addFD(fd);
+      onClose();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'Could not save FD');
+    }
   };
 
   return (
@@ -100,7 +103,7 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
         <Select label="FD Type" value={form.fdType} onChange={(e) => set('fdType', e.target.value)} options={[{ value: 'Cumulative', label: 'Cumulative' }, { value: 'Non-Cumulative', label: 'Non-Cumulative' }]} />
         <Input label="Nominee" value={form.nominee} onChange={(e) => set('nominee', e.target.value)} placeholder="Nominee name" />
       </div>
-      <Input label="FD Number / Reference" value={form.reference} onChange={(e) => set('reference', e.target.value)} placeholder="Optional reference number" />
+      <Input label="FD Number" value={form.fdNumber} onChange={(e) => set('fdNumber', e.target.value)} placeholder="Optional FD number" />
       <div className="flex gap-3 pt-2">
         <Button variant="ghost" onClick={onClose} className="flex-1">Cancel</Button>
         <Button variant="primary" onClick={handleSubmit} className="flex-1">

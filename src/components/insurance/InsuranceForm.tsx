@@ -3,8 +3,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { useStore } from '@/store';
-import { generateId } from '@/utils';
-import { Insurance } from '@/types';
+import { Insurance, NewInsurance } from '@/types';
 
 interface InsFormProps {
   initial?: Insurance;
@@ -44,12 +43,10 @@ export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) return;
     const isEdit = initial && !isRenewal;
-    const ins: Insurance = {
-      id: isEdit ? initial.id : generateId(),
-      parentId: isRenewal ? initial?.id : initial?.parentId,
+    const ins: NewInsurance = {
       name: form.name,
       company: form.company,
       policyType: form.policyType as Insurance['policyType'],
@@ -62,9 +59,13 @@ export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
       nominee: form.nominee,
       createdAt: isEdit ? initial.createdAt : new Date().toISOString(),
     };
-    if (isEdit) updateInsurance(initial.id, ins);
-    else addInsurance(ins);
-    onClose();
+    try {
+      if (isEdit) await updateInsurance(initial.id, ins);
+      else await addInsurance(ins);
+      onClose();
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : 'Could not save policy');
+    }
   };
 
   return (
