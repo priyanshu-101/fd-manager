@@ -8,12 +8,13 @@ import { Insurance } from '@/types';
 
 interface InsFormProps {
   initial?: Insurance;
+  isRenewal?: boolean;
   onClose: () => void;
 }
 
 const policyTypes = ['Life', 'Health', 'Term', 'ULIP', 'Vehicle', 'Other'].map((v) => ({ value: v, label: v }));
 
-export function InsuranceForm({ initial, onClose }: InsFormProps) {
+export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
   const { addInsurance, updateInsurance } = useStore();
   const [form, setForm] = useState({
     name: initial?.name ?? '',
@@ -22,9 +23,9 @@ export function InsuranceForm({ initial, onClose }: InsFormProps) {
     policyNumber: initial?.policyNumber ?? '',
     sumAssured: initial?.sumAssured?.toString() ?? '',
     annualPremium: initial?.annualPremium?.toString() ?? '',
-    startDate: initial?.startDate ?? '',
-    maturityDate: initial?.maturityDate ?? '',
-    premiumDueDate: initial?.premiumDueDate ?? '',
+    startDate: isRenewal ? initial?.maturityDate ?? '' : initial?.startDate ?? '',
+    maturityDate: isRenewal ? '' : initial?.maturityDate ?? '',
+    premiumDueDate: isRenewal ? '' : initial?.premiumDueDate ?? '',
     nominee: initial?.nominee ?? '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -45,8 +46,10 @@ export function InsuranceForm({ initial, onClose }: InsFormProps) {
 
   const handleSubmit = () => {
     if (!validate()) return;
+    const isEdit = initial && !isRenewal;
     const ins: Insurance = {
-      id: initial?.id ?? generateId(),
+      id: isEdit ? initial.id : generateId(),
+      parentId: isRenewal ? initial?.id : initial?.parentId,
       name: form.name,
       company: form.company,
       policyType: form.policyType as Insurance['policyType'],
@@ -57,9 +60,9 @@ export function InsuranceForm({ initial, onClose }: InsFormProps) {
       maturityDate: form.maturityDate,
       premiumDueDate: form.premiumDueDate,
       nominee: form.nominee,
-      createdAt: initial?.createdAt ?? new Date().toISOString(),
+      createdAt: isEdit ? initial.createdAt : new Date().toISOString(),
     };
-    if (initial) updateInsurance(initial.id, ins);
+    if (isEdit) updateInsurance(initial.id, ins);
     else addInsurance(ins);
     onClose();
   };
@@ -89,7 +92,7 @@ export function InsuranceForm({ initial, onClose }: InsFormProps) {
       <div className="flex gap-3 pt-2">
         <Button variant="ghost" onClick={onClose} className="flex-1">Cancel</Button>
         <Button variant="primary" onClick={handleSubmit} className="flex-1">
-          {initial ? 'Update Policy' : 'Add Policy'}
+          {isRenewal ? 'Renew Policy' : initial ? 'Update Policy' : 'Add Policy'}
         </Button>
       </div>
     </div>

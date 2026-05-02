@@ -3,23 +3,24 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { useStore } from '@/store';
-import { generateId } from '@/utils';
+import { generateId, calcMaturityAmount } from '@/utils';
 import { FD } from '@/types';
 
 interface FDFormProps {
   initial?: FD;
+  isRenewal?: boolean;
   onClose: () => void;
 }
 
-export function FDForm({ initial, onClose }: FDFormProps) {
+export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
   const { addFD, updateFD } = useStore();
   const [form, setForm] = useState({
     bank: initial?.bank ?? '',
     holder: initial?.holder ?? '',
-    amount: initial?.amount?.toString() ?? '',
+    amount: (isRenewal ? calcMaturityAmount(initial!) : initial?.amount)?.toString() ?? '',
     rate: initial?.rate?.toString() ?? '',
-    startDate: initial?.startDate ?? '',
-    maturityDate: initial?.maturityDate ?? '',
+    startDate: isRenewal ? initial?.maturityDate ?? '' : initial?.startDate ?? '',
+    maturityDate: isRenewal ? '' : initial?.maturityDate ?? '',
     fdType: initial?.fdType ?? 'Cumulative',
     nominee: initial?.nominee ?? '',
     reference: initial?.reference ?? '',
@@ -43,8 +44,10 @@ export function FDForm({ initial, onClose }: FDFormProps) {
 
   const handleSubmit = () => {
     if (!validate()) return;
+    const isEdit = initial && !isRenewal;
     const fd: FD = {
-      id: initial?.id ?? generateId(),
+      id: isEdit ? initial.id : generateId(),
+      parentId: isRenewal ? initial?.id : initial?.parentId,
       bank: form.bank,
       holder: form.holder,
       amount: Number(form.amount),
@@ -54,9 +57,9 @@ export function FDForm({ initial, onClose }: FDFormProps) {
       fdType: form.fdType as FD['fdType'],
       nominee: form.nominee,
       reference: form.reference,
-      createdAt: initial?.createdAt ?? new Date().toISOString(),
+      createdAt: isEdit ? initial.createdAt : new Date().toISOString(),
     };
-    if (initial) updateFD(initial.id, fd);
+    if (isEdit) updateFD(initial.id, fd);
     else addFD(fd);
     onClose();
   };
@@ -83,7 +86,7 @@ export function FDForm({ initial, onClose }: FDFormProps) {
       <div className="flex gap-3 pt-2">
         <Button variant="ghost" onClick={onClose} className="flex-1">Cancel</Button>
         <Button variant="primary" onClick={handleSubmit} className="flex-1">
-          {initial ? 'Update FD' : 'Add FD'}
+          {isRenewal ? 'Renew FD' : initial ? 'Update FD' : 'Add FD'}
         </Button>
       </div>
     </div>

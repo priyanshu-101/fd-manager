@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Shield, Pencil, Trash2, ChevronDown, ChevronUp, Calendar } from 'lucide-react';
+import { Shield, Pencil, Trash2, ChevronDown, ChevronUp, Calendar, RotateCw } from 'lucide-react';
 import { Insurance } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { Timeline } from '@/components/ui/Timeline';
 import { InsuranceForm } from './InsuranceForm';
 import { daysLeft, getAlertLevel, formatINR, formatDate, tenureProgress } from '@/utils';
 import { useStore } from '@/store';
@@ -19,13 +20,83 @@ const typeColors: Record<string, string> = {
 };
 
 export function InsuranceCard({ ins }: { ins: Insurance }) {
-  const { deleteInsurance } = useStore();
+  const { insurances, deleteInsurance } = useStore();
   const [expanded, setExpanded] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [renewing, setRenewing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const days = daysLeft(ins.maturityDate);
   const level = getAlertLevel(days);
   const progress = tenureProgress(ins.startDate, ins.maturityDate);
   const premiumDays = ins.premiumDueDate ? daysLeft(ins.premiumDueDate) : null;
+
+  // Build renewal history
+  const getHistory = () => {
+    const history: any[] = [];
+    
+    // Find all ancestors
+    let current = ins;
+    while (current.parentId) {
+      const parent = insurances.find(i => i.id === current.parentId);
+      if (parent) {
+        history.unshift({
+          id: parent.id,
+          label: parent.name,
+          sub: parent.company,
+          date: parent.maturityDate,
+          amount: parent.sumAssured,
+          details: [
+            { label: 'Premium', value: formatINR(parent.annualPremium) },
+            { label: 'Type', value: parent.policyType },
+            { label: 'Start', value: formatDate(parent.startDate) },
+            { label: 'Nominee', value: parent.nominee || '—' },
+          ]
+        });
+        current = parent;
+      } else break;
+    }
+
+    // Add current
+    history.push({
+      id: ins.id,
+      label: ins.name,
+      sub: ins.company,
+      date: ins.maturityDate,
+      amount: ins.sumAssured,
+      current: true,
+      details: [
+        { label: 'Premium', value: formatINR(ins.annualPremium) },
+        { label: 'Type', value: ins.policyType },
+        { label: 'Start', value: formatDate(ins.startDate) },
+        { label: 'Nominee', value: ins.nominee || '—' },
+      ]
+    });
+
+    // Find all descendants (future renewals)
+    current = ins;
+    let child = insurances.find(i => i.parentId === current.id);
+    while (child) {
+      history.push({
+        id: child.id,
+        label: child.name,
+        sub: child.company,
+        date: child.maturityDate,
+        amount: child.sumAssured,
+        details: [
+          { label: 'Premium', value: formatINR(child.annualPremium) },
+          { label: 'Type', value: child.policyType },
+          { label: 'Start', value: formatDate(child.startDate) },
+          { label: 'Nominee', value: child.nominee || '—' },
+        ]
+      });
+      current = child;
+      child = insurances.find(i => i.parentId === current.id);
+    }
+
+    return history;
+  };
+
+  const history = getHistory();
 
   return (
     <>
@@ -101,15 +172,32 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
               <div className="flex justify-between"><span className="text-ink-500">Premium due</span><span className="text-ink-200">{ins.premiumDueDate ? formatDate(ins.premiumDueDate) : '—'}</span></div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 justify-end">
+              <Button variant="ghost" size="sm" onClick={() => setRenewing(true)}><RotateCw size={13} />Renew</Button>
               <Button variant="ghost" size="sm" onClick={() => setEditing(true)}><Pencil size={13} />Edit</Button>
-              <Button variant="danger" size="sm" onClick={() => confirm('Delete this policy?') && deleteInsurance(ins.id)}><Trash2 size={13} />Delete</Button>
+              <Button variant="danger" size="sm" onClick={() => setConfirmDelete(true)}><Trash2 size={13} />Delete</Button>
             </div>
+
+            <Timeline items={history} />
           </div>
         )}
       </div>
 
       <Modal open={editing} onClose={() => setEditing(false)} title="Edit Insurance Policy">
         <InsuranceForm initial={ins} onClose={() => setEditing(false)} />
+      </Modal>
+
+      <Modal open={renewing} onClose={() => setRenewing(false)} title="Renew Insurance Policy">
+        <InsuranceForm initial={ins} isRenewal onClose={() => setRenewing(false)} />
+      </Modal>
+
+      <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Delete Insurance Policy">
+        <div className="space-y-4">
+          <p className="text-ink-200">Are you sure you want to delete <span className="text-sky-400 font-medium">{ins.name}</span>? This action cannot be undone.</p>
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+            <Button variant="danger" onClick={() => { deleteInsurance(ins.id); setConfirmDelete(false); }}>Delete</Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

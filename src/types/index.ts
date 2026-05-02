@@ -1,5 +1,6 @@
 export interface FD {
   id: string;
+  parentId?: string;
   bank: string;
   holder: string;
   amount: number;
@@ -14,6 +15,7 @@ export interface FD {
 
 export interface Insurance {
   id: string;
+  parentId?: string;
   name: string;
   company: string;
   policyType: 'Life' | 'Health' | 'Term' | 'ULIP' | 'Vehicle' | 'Other';
