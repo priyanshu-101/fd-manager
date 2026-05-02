@@ -17,7 +17,7 @@ const fdSchema = new mongoose.Schema(
   {
     parentId: { type: String },
     bank: { type: String, required: true },
-    holder: { type: String, required: true },
+    holder: { type: String, default: '' },
     amount: { type: Number, required: true },
     rate: { type: Number, required: true },
     startDate: { type: String, required: true },
