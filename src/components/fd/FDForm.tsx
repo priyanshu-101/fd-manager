@@ -63,19 +63,19 @@ export function FDForm({ initial, onClose }: FDFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Bank / Institution *" value={form.bank} onChange={(e) => set('bank', e.target.value)} placeholder="e.g. SBI, HDFC" error={errors.bank} />
         <Input label="Account Holder" value={form.holder} onChange={(e) => set('holder', e.target.value)} placeholder="Full name" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Principal Amount (₹) *" type="number" value={form.amount} onChange={(e) => set('amount', e.target.value)} placeholder="500000" error={errors.amount} />
         <Input label="Interest Rate (% p.a.) *" type="number" step="0.01" value={form.rate} onChange={(e) => set('rate', e.target.value)} placeholder="7.5" error={errors.rate} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Start Date *" type="date" value={form.startDate} onChange={(e) => set('startDate', e.target.value)} error={errors.startDate} />
         <Input label="Maturity Date *" type="date" value={form.maturityDate} onChange={(e) => set('maturityDate', e.target.value)} error={errors.maturityDate} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Select label="FD Type" value={form.fdType} onChange={(e) => set('fdType', e.target.value)} options={[{ value: 'Cumulative', label: 'Cumulative' }, { value: 'Non-Cumulative', label: 'Non-Cumulative' }]} />
         <Input label="Nominee" value={form.nominee} onChange={(e) => set('nominee', e.target.value)} placeholder="Nominee name" />
       </div>

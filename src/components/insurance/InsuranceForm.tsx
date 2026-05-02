@@ -66,23 +66,23 @@ export function InsuranceForm({ initial, onClose }: InsFormProps) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Policy Name *" value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="e.g. LIC Jeevan Anand" error={errors.name} />
         <Input label="Insurance Company *" value={form.company} onChange={(e) => set('company', e.target.value)} placeholder="e.g. LIC, Max Life" error={errors.company} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Select label="Policy Type" value={form.policyType} onChange={(e) => set('policyType', e.target.value)} options={policyTypes} />
         <Input label="Policy Number" value={form.policyNumber} onChange={(e) => set('policyNumber', e.target.value)} placeholder="Policy number" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Sum Assured (₹)" type="number" value={form.sumAssured} onChange={(e) => set('sumAssured', e.target.value)} placeholder="1000000" />
         <Input label="Annual Premium (₹)" type="number" value={form.annualPremium} onChange={(e) => set('annualPremium', e.target.value)} placeholder="25000" />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Policy Start Date *" type="date" value={form.startDate} onChange={(e) => set('startDate', e.target.value)} error={errors.startDate} />
         <Input label="Maturity / Renewal Date *" type="date" value={form.maturityDate} onChange={(e) => set('maturityDate', e.target.value)} error={errors.maturityDate} />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input label="Next Premium Due Date" type="date" value={form.premiumDueDate} onChange={(e) => set('premiumDueDate', e.target.value)} />
         <Input label="Nominee" value={form.nominee} onChange={(e) => set('nominee', e.target.value)} placeholder="Nominee name" />
       </div>

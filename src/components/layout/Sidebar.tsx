@@ -8,11 +8,11 @@ const navItems = [
   { to: '/insurance', icon: Shield, label: 'Insurance' },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
   const alerts = useAlerts();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-ink-900 border-r border-ink-700/50 flex flex-col z-30">
+    <aside className={`fixed left-0 top-0 h-full w-64 bg-ink-900 border-r border-ink-700/50 flex flex-col z-30 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="px-6 py-7 border-b border-ink-700/40">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gold-shimmer bg-gold-500 flex items-center justify-center shadow-glow-gold">
@@ -31,6 +31,7 @@ export function Sidebar() {
             key={to}
             to={to}
             end={to === '/'}
+            onClick={onClose}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
                 isActive

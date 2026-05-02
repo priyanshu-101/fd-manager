@@ -16,7 +16,7 @@ export function InsurancePage() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-8 animate-fade-up">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 animate-fade-up">
         <div>
           <h1 className="font-display text-3xl text-ink-50">Insurance Policies</h1>
           <p className="text-ink-400 mt-1 text-sm">Track all your insurance policies and premium due dates.</p>
@@ -27,7 +27,7 @@ export function InsurancePage() {
       </div>
 
       {insurances.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 mb-8 animate-fade-up" style={{ animationDelay: '60ms' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 animate-fade-up" style={{ animationDelay: '60ms' }}>
           <div className="bg-ink-800/60 border border-ink-600/30 rounded-xl px-5 py-4">
             <p className="text-ink-500 text-xs uppercase tracking-wider mb-1">Total Coverage</p>
             <p className="font-mono text-xl text-sky-400 font-medium">{formatINR(totalCover)}</p>

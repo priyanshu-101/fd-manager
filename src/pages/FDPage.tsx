@@ -17,7 +17,7 @@ export function FDPage() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-8 animate-fade-up">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8 animate-fade-up">
         <div>
           <h1 className="font-display text-3xl text-ink-50">Fixed Deposits</h1>
           <p className="text-ink-400 mt-1 text-sm">Manage all your FD accounts and maturity dates.</p>
@@ -28,7 +28,7 @@ export function FDPage() {
       </div>
 
       {fds.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mb-8 animate-fade-up" style={{ animationDelay: '60ms' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-fade-up" style={{ animationDelay: '60ms' }}>
           <div className="bg-ink-800/60 border border-ink-600/30 rounded-xl px-5 py-4">
             <p className="text-ink-500 text-xs uppercase tracking-wider mb-1">Total Invested</p>
             <p className="font-mono text-xl text-ink-100 font-medium">{formatINR(totalPrincipal)}</p>

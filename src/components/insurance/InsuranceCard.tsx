@@ -52,7 +52,7 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-3 gap-4">
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <p className="text-ink-500 text-xs uppercase tracking-wider mb-1">Sum Assured</p>
               <p className="font-mono text-ink-100 font-medium">{formatINR(ins.sumAssured)}</p>
@@ -74,7 +74,7 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
           </div>
 
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-ink-500 mb-1.5">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-xs text-ink-500 mb-1.5 gap-1">
               <span>{formatDate(ins.startDate)}</span>
               <span className={days < 0 ? 'text-ink-400' : days <= 30 ? 'text-crimson-500' : 'text-ink-400'}>
                 {days < 0 ? 'Matured' : `${days} days left`}
@@ -94,13 +94,13 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
 
         {expanded && (
           <div className="px-6 pb-5 border-t border-ink-700/40 pt-4 animate-fade-in">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
               <div className="flex justify-between"><span className="text-ink-500">Policy No.</span><span className="text-ink-200 font-mono">{ins.policyNumber || '—'}</span></div>
               <div className="flex justify-between"><span className="text-ink-500">Nominee</span><span className="text-ink-200">{ins.nominee || '—'}</span></div>
               <div className="flex justify-between"><span className="text-ink-500">Tenure progress</span><span className="text-ink-200 font-mono">{progress}%</span></div>
               <div className="flex justify-between"><span className="text-ink-500">Premium due</span><span className="text-ink-200">{ins.premiumDueDate ? formatDate(ins.premiumDueDate) : '—'}</span></div>
             </div>
-            <div className="flex gap-2 justify-end">
+            <div className="flex flex-col sm:flex-row gap-2 justify-end">
               <Button variant="ghost" size="sm" onClick={() => setEditing(true)}><Pencil size={13} />Edit</Button>
               <Button variant="danger" size="sm" onClick={() => confirm('Delete this policy?') && deleteInsurance(ins.id)}><Trash2 size={13} />Delete</Button>
             </div>

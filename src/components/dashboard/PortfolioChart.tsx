@@ -29,8 +29,8 @@ export function PortfolioChart() {
     <div className="bg-ink-800/70 border border-ink-600/30 rounded-2xl p-6">
       <h3 className="font-display text-lg text-ink-100 mb-1">Portfolio Overview</h3>
       <p className="text-ink-500 text-xs mb-5">Asset allocation at a glance</p>
-      <div className="flex items-center gap-6">
-        <div className="h-44 w-44 shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+        <div className="h-44 w-44 shrink-0 mx-auto sm:mx-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={data} cx="50%" cy="50%" innerRadius={48} outerRadius={72} paddingAngle={3} dataKey="value">

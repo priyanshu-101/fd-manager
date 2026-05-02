@@ -23,7 +23,7 @@ export function DashboardPage() {
 
       <AlertsBanner />
 
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard label="Total FD Investment" value={formatINR(totalFD)} sub={`${fds.length} active FD${fds.length !== 1 ? 's' : ''}`} icon={<Building2 size={18} />} accent="gold" delay={0} />
         <StatCard label="Expected Returns" value={formatINR(totalMaturity)} sub="On full maturity" icon={<TrendingUp size={18} />} accent="emerald" delay={60} />
         <StatCard label="Insurance Cover" value={formatINR(totalCover)} sub={`${insurances.length} polic${insurances.length !== 1 ? 'ies' : 'y'}`} icon={<Shield size={18} />} accent="sky" delay={120} />
