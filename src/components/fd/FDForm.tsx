@@ -45,9 +45,25 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
   const handleSubmit = () => {
     if (!validate()) return;
     const isEdit = initial && !isRenewal;
+    
+    let history = initial?.history || [];
+    if (isRenewal && initial) {
+      // Capture current state before updating for renewal
+      const historyEntry = {
+        id: generateId(),
+        amount: initial.amount,
+        rate: initial.rate,
+        startDate: initial.startDate,
+        maturityDate: initial.maturityDate,
+        fdType: initial.fdType,
+        updatedAt: new Date().toISOString()
+      };
+      history = [...history, historyEntry];
+    }
+
     const fd: FD = {
-      id: isEdit ? initial.id : generateId(),
-      parentId: isRenewal ? initial?.id : initial?.parentId,
+      id: (isEdit || isRenewal) ? initial!.id : generateId(),
+      parentId: initial?.parentId, // Keep parentId if it exists
       bank: form.bank,
       holder: form.holder,
       amount: Number(form.amount),
@@ -57,9 +73,11 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
       fdType: form.fdType as FD['fdType'],
       nominee: form.nominee,
       reference: form.reference,
-      createdAt: isEdit ? initial.createdAt : new Date().toISOString(),
+      createdAt: isEdit ? initial.createdAt : (initial?.createdAt || new Date().toISOString()),
+      history: history
     };
-    if (isEdit) updateFD(initial.id, fd);
+
+    if (isEdit || isRenewal) updateFD(initial!.id, fd);
     else addFD(fd);
     onClose();
   };

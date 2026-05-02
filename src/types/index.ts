@@ -11,6 +11,17 @@ export interface FD {
   nominee: string;
   reference: string;
   createdAt: string;
+  history?: HistoryEntry[];
+}
+
+export interface HistoryEntry {
+  id: string;
+  amount: number;
+  rate: number;
+  startDate: string;
+  maturityDate: string;
+  fdType: string;
+  updatedAt: string;
 }
 
 export interface Insurance {
@@ -27,6 +38,7 @@ export interface Insurance {
   premiumDueDate: string;
   nominee: string;
   createdAt: string;
+  history?: any[];
 }
 
 export type AlertLevel = 'critical' | 'warning' | 'safe' | 'matured';
