@@ -41,7 +41,7 @@ export function FDCard({ fd }: { fd: FD }) {
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-3 gap-4">
+          <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <p className="text-ink-500 text-xs uppercase tracking-wider mb-1">Principal</p>
               <p className="font-mono text-ink-100 font-medium">{formatINR(fd.amount)}</p>
@@ -57,7 +57,7 @@ export function FDCard({ fd }: { fd: FD }) {
           </div>
 
           <div className="mt-4">
-            <div className="flex justify-between text-xs text-ink-500 mb-1.5">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-xs text-ink-500 mb-1.5 gap-1">
               <span>{formatDate(fd.startDate)}</span>
               <span className={days < 0 ? 'text-ink-400' : days <= 30 ? 'text-crimson-500' : 'text-ink-400'}>
                 {days < 0 ? 'Matured' : `${days} days left`}
@@ -70,13 +70,13 @@ export function FDCard({ fd }: { fd: FD }) {
 
         {expanded && (
           <div className="px-6 pb-5 border-t border-ink-700/40 pt-4 animate-fade-in">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
               <div className="flex justify-between"><span className="text-ink-500">Rate</span><span className="text-ink-200 font-mono">{fd.rate}% p.a.</span></div>
               <div className="flex justify-between"><span className="text-ink-500">Type</span><span className="text-ink-200">{fd.fdType}</span></div>
               <div className="flex justify-between"><span className="text-ink-500">Nominee</span><span className="text-ink-200">{fd.nominee || '—'}</span></div>
               <div className="flex justify-between"><span className="text-ink-500">Tenure progress</span><span className="text-ink-200 font-mono">{progress}%</span></div>
             </div>
-            <div className="flex gap-2 justify-end">
+            <div className="flex flex-col sm:flex-row gap-2 justify-end">
               <Button variant="ghost" size="sm" onClick={() => setEditing(true)}><Pencil size={13} />Edit</Button>
               <Button variant="danger" size="sm" onClick={() => confirm('Delete this FD?') && deleteFD(fd.id)}><Trash2 size={13} />Delete</Button>
             </div>
