@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
 import { useStore } from '@/store';
 import { generateId, calcMaturityAmount } from '@/utils';
 import { FD, NewFD } from '@/types';
@@ -26,6 +27,7 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
     fdNumber: initial?.fdNumber ?? '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -43,6 +45,7 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     if (!validate()) return;
     const isEdit = initial && !isRenewal;
 
@@ -77,11 +80,14 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
     };
 
     try {
+      setIsSubmitting(true);
       if (isEdit || isRenewal) await updateFD(initial!.id, fd);
       else await addFD(fd);
       onClose();
     } catch (err) {
       window.alert(err instanceof Error ? err.message : 'Could not save FD');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -105,9 +111,10 @@ export function FDForm({ initial, isRenewal, onClose }: FDFormProps) {
       </div>
       <Input label="FD Number" value={form.fdNumber} onChange={(e) => set('fdNumber', e.target.value)} placeholder="Optional FD number" />
       <div className="flex gap-3 pt-2">
-        <Button variant="ghost" onClick={onClose} className="flex-1">Cancel</Button>
-        <Button variant="primary" onClick={handleSubmit} className="flex-1">
-          {isRenewal ? 'Renew FD' : initial ? 'Update FD' : 'Add FD'}
+        <Button variant="ghost" onClick={onClose} className="flex-1" disabled={isSubmitting}>Cancel</Button>
+        <Button variant="primary" onClick={handleSubmit} className="flex-1" disabled={isSubmitting}>
+          {isSubmitting && <Spinner />}
+          {isSubmitting ? 'Saving...' : isRenewal ? 'Renew FD' : initial ? 'Update FD' : 'Add FD'}
         </Button>
       </div>
     </div>

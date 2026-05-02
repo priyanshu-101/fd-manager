@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
 import { useStore } from '@/store';
 import { Insurance, NewInsurance } from '@/types';
 
@@ -28,6 +29,7 @@ export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
     nominee: initial?.nominee ?? '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -44,6 +46,7 @@ export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     if (!validate()) return;
     const isEdit = initial && !isRenewal;
     const ins: NewInsurance = {
@@ -60,11 +63,14 @@ export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
       createdAt: isEdit ? initial.createdAt : new Date().toISOString(),
     };
     try {
+      setIsSubmitting(true);
       if (isEdit) await updateInsurance(initial.id, ins);
       else await addInsurance(ins);
       onClose();
     } catch (err) {
       window.alert(err instanceof Error ? err.message : 'Could not save policy');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -91,9 +97,10 @@ export function InsuranceForm({ initial, isRenewal, onClose }: InsFormProps) {
         <Input label="Nominee" value={form.nominee} onChange={(e) => set('nominee', e.target.value)} placeholder="Nominee name" />
       </div>
       <div className="flex gap-3 pt-2">
-        <Button variant="ghost" onClick={onClose} className="flex-1">Cancel</Button>
-        <Button variant="primary" onClick={handleSubmit} className="flex-1">
-          {isRenewal ? 'Renew Policy' : initial ? 'Update Policy' : 'Add Policy'}
+        <Button variant="ghost" onClick={onClose} className="flex-1" disabled={isSubmitting}>Cancel</Button>
+        <Button variant="primary" onClick={handleSubmit} className="flex-1" disabled={isSubmitting}>
+          {isSubmitting && <Spinner />}
+          {isSubmitting ? 'Saving...' : isRenewal ? 'Renew Policy' : initial ? 'Update Policy' : 'Add Policy'}
         </Button>
       </div>
     </div>

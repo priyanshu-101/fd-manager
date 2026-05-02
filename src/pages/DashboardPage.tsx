@@ -2,12 +2,13 @@ import { Building2, Shield, TrendingUp, Wallet } from 'lucide-react';
 import { useStore } from '@/store';
 import { calcMaturityAmount, formatINR } from '@/utils';
 import { StatCard } from '@/components/ui/StatCard';
+import { Spinner } from '@/components/ui/Spinner';
 import { AlertsBanner } from '@/components/dashboard/AlertsBanner';
 import { PortfolioChart } from '@/components/dashboard/PortfolioChart';
 import { UpcomingList } from '@/components/dashboard/UpcomingList';
 
 export function DashboardPage() {
-  const { fds, insurances } = useStore();
+  const { fds, insurances, hydrationStatus } = useStore();
 
   const totalFD = fds.reduce((s, f) => s + f.amount, 0);
   const totalMaturity = fds.reduce((s, f) => s + calcMaturityAmount(f), 0);
@@ -20,6 +21,15 @@ export function DashboardPage() {
         <h1 className="font-display text-3xl text-ink-50">Portfolio Overview</h1>
         <p className="text-ink-400 mt-1 text-sm">Track your fixed deposits and insurance policies in one place.</p>
       </div>
+
+      {hydrationStatus === 'loading' && (
+        <div className="mb-6 rounded-2xl border border-ink-700/40 bg-ink-900/60 px-4 py-3">
+          <div className="flex items-center gap-3 text-sm text-ink-300">
+            <Spinner className="text-sky-400" />
+            <span>Loading dashboard insights...</span>
+          </div>
+        </div>
+      )}
 
       <AlertsBanner />
 

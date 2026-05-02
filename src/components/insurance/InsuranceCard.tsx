@@ -4,6 +4,7 @@ import { Insurance } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
 import { Timeline } from '@/components/ui/Timeline';
 import { InsuranceForm } from './InsuranceForm';
@@ -25,6 +26,7 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
   const [editing, setEditing] = useState(false);
   const [renewing, setRenewing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const days = daysLeft(ins.maturityDate);
   const level = getAlertLevel(days);
   const progress = tenureProgress(ins.startDate, ins.maturityDate);
@@ -148,19 +150,24 @@ export function InsuranceCard({ ins }: { ins: Insurance }) {
         <div className="space-y-4">
           <p className="text-ink-200">Are you sure you want to delete <span className="text-sky-400 font-medium">{ins.name}</span>? This action cannot be undone.</p>
           <div className="flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setConfirmDelete(false)} disabled={isDeleting}>Cancel</Button>
             <Button
               variant="danger"
+              disabled={isDeleting}
               onClick={async () => {
                 try {
+                  setIsDeleting(true);
                   await deleteInsurance(ins.id);
                   setConfirmDelete(false);
                 } catch (err) {
                   window.alert(err instanceof Error ? err.message : 'Delete failed');
+                } finally {
+                  setIsDeleting(false);
                 }
               }}
             >
-              Delete
+              {isDeleting && <Spinner />}
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </Button>
           </div>
         </div>

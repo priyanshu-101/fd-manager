@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
 import { useStore } from '@/store';
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -40,7 +41,15 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="lg:ml-64 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-10 pt-16 lg:pt-10">
           {hydrationStatus === 'loading' && (
-            <p className="text-sm text-ink-500 mb-6 animate-pulse">Loading portfolio…</p>
+            <div className="mb-6 rounded-2xl border border-ink-700/50 bg-ink-900/70 p-4">
+              <div className="flex items-center gap-3 text-ink-200">
+                <Spinner className="text-gold-400" />
+                <p className="text-sm font-medium">Syncing your portfolio data...</p>
+              </div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-ink-800">
+                <div className="h-full w-1/3 animate-pulse rounded-full bg-gradient-to-r from-gold-500 via-gold-400 to-transparent" />
+              </div>
+            </div>
           )}
           {hydrationStatus === 'error' && hydrateError && (
             <div
