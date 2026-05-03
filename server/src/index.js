@@ -5,8 +5,8 @@ import mongoose from 'mongoose';
 import { fdsRouter } from './routes/fds.js';
 import { insurancesRouter } from './routes/insurances.js';
 
-const PORT = Number(process.env.PORT) || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://vaultwise:vaultwise@cluster0.wjtpqoi.mongodb.net/?appName=Cluster0';
+const PORT = Number(process.env.PORT);
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const app = express();
 
