@@ -4,7 +4,7 @@ import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { useStore } from '@/store';
-import { generateId, calcMaturityAmount } from '@/utils';
+import { calcMaturityAmount } from '@/utils';
 import { FD, NewFD } from '@/types';
 
 interface FDFormProps {
