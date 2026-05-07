@@ -1,6 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Sidebar } from './Sidebar';
+import { Navbar } from './Navbar';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { useStore } from '@/store';
@@ -39,6 +40,7 @@ export function Layout({ children }: { children: ReactNode }) {
       )}
 
       <main className="lg:ml-64 min-h-screen">
+        <Navbar />
         <div className="max-w-6xl mx-auto px-4 sm:px-8 py-10 pt-16 lg:pt-10">
           {hydrationStatus === 'loading' && (
             <div className="mb-6 rounded-2xl border border-ink-700/50 bg-ink-900/70 p-4">

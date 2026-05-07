@@ -1,19 +1,41 @@
 import type { FD, Insurance, NewFD, NewInsurance } from '@/types';
 
 function baseUrl(): string {
-  return import.meta.env.VITE_API_URL ?? '';
+  return import.meta.env.VITE_API_URL ?? 'http://localhost:5000';
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = localStorage.getItem('authToken');
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(init?.headers as Record<string, string>),
+  };
+
+  // Add auth token if available
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${baseUrl()}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(init?.headers as Record<string, string>) },
+    headers,
     ...init,
   });
+
+  // Handle 401 Unauthorized (token expired)
+  if (res.status === 401) {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+    throw new Error('Session expired. Please login again.');
+  }
+
   if (!res.ok) {
     let msg = res.statusText;
     try {
-      const j = (await res.json()) as { error?: string };
+      const j = (await res.json()) as { error?: string; message?: string };
       if (j?.error) msg = j.error;
+      if (j?.message) msg = j.message;
     } catch {
       /* ignore */
     }
