@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignupForm } from '@/components/auth/SignupForm';
+import { ChangePasswordModal } from '@/components/auth/ChangePasswordModal';
 
 export function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSuccess = () => {
@@ -40,7 +42,7 @@ export function LoginPage() {
           )}
 
           {/* Toggle */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-4">
             <p className="text-sm text-ink-400">
               {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
               <button
@@ -50,8 +52,23 @@ export function LoginPage() {
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
+            
+            {isLogin && (
+              <button
+                onClick={() => setIsChangePasswordOpen(true)}
+                className="text-sm text-ink-500 hover:text-gold-400/80 transition-colors"
+              >
+                Forgot or Change Password?
+              </button>
+            )}
           </div>
         </div>
+
+        {/* Change Password Modal */}
+        <ChangePasswordModal 
+          open={isChangePasswordOpen} 
+          onClose={() => setIsChangePasswordOpen(false)} 
+        />
 
         {/* Footer */}
         <div className="text-center mt-8 text-xs text-ink-500">

@@ -6,6 +6,8 @@ interface AuthStore extends AuthState {
   signup: (credentials: SignupCredentials) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  updateProfile: (data: { name: string; email: string }) => Promise<void>;
+  changePassword: (data: any) => Promise<void>;
   clearError: () => void;
 }
 
@@ -157,6 +159,39 @@ export const useAuthStore = create<AuthStore>((set) => ({
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       set({ user: null, isAuthenticated: false, isLoading: false });
+    }
+  },
+
+  updateProfile: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await apiRequest<any>('/api/users/edit', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+
+      const updatedUser = formatUser(response.user);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      set({ user: updatedUser, isLoading: false });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Profile update failed';
+      set({ error: message, isLoading: false });
+      throw err;
+    }
+  },
+
+  changePassword: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await apiRequest<any>('/api/users/change-password', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      });
+      set({ isLoading: false });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Password change failed';
+      set({ error: message, isLoading: false });
+      throw err;
     }
   },
 
