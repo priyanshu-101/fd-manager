@@ -65,11 +65,15 @@ const formatUser = (backendUser: any): User => ({
   avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${backendUser.email}`,
 });
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
-  isLoading: false,
+const initialState = {
+  user: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || 'null') : null,
+  isLoading: typeof window !== 'undefined' ? !!localStorage.getItem('authToken') : false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('authToken') : false,
+};
+
+export const useAuthStore = create<AuthStore>((set) => ({
+  ...initialState,
 
   login: async (credentials) => {
     set({ isLoading: true, error: null });
