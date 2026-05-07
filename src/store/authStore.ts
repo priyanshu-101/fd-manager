@@ -120,25 +120,25 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   logout: async () => {
-    set({ isLoading: true });
-    try {
-      const token = localStorage.getItem('authToken');
-      
-      if (token) {
-        await apiRequest('/api/users/logout', {
+    // Clear local storage and state immediately for instant feedback
+    const token = localStorage.getItem('authToken');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    set({ user: null, isAuthenticated: false, isLoading: false, error: null });
+
+    // Optionally call logout API in background if token exists
+    if (token) {
+      try {
+        await fetch(`${API_URL}/api/users/logout`, {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
+      } catch (err) {
+        console.error('Background logout failed:', err);
       }
-
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-
-      set({ user: null, isAuthenticated: false, isLoading: false, error: null });
-    } catch (err) {
-      // Still clear local storage even if API call fails
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      set({ user: null, isAuthenticated: false, isLoading: false, error: null });
     }
   },
 
