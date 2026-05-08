@@ -38,7 +38,7 @@ async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<T
     if (contentType && contentType.includes('application/json')) {
       data = await response.json();
     } else {
-      const text = await response.text();
+      // const text = await response.text();
       throw new Error(
         `Server returned non-JSON response: ${response.status} ${response.statusText}. Check if API is running at ${API_URL}`
       );

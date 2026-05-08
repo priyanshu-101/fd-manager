@@ -6,7 +6,7 @@ import { EditProfileModal } from '@/components/auth/EditProfileModal';
 import { ChangePasswordModal } from '@/components/auth/ChangePasswordModal';
 
 export function Navbar() {
-  const { user, logout, isLoading } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
