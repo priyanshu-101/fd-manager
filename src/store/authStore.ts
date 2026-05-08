@@ -67,7 +67,7 @@ const formatUser = (backendUser: any): User => ({
 
 const initialState = {
   user: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user') || 'null') : null,
-  isLoading: typeof window !== 'undefined' ? !!localStorage.getItem('authToken') : false,
+  isLoading: false,
   error: null,
   isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('authToken') : false,
 };
@@ -120,25 +120,32 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
 
   logout: async () => {
-    // Clear local storage and state immediately for instant feedback
+    // 1. Get token before clearing
     const token = localStorage.getItem('authToken');
+
+    // 2. Clear local storage and state IMMEDIATELY for instant UI response
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
-    set({ user: null, isAuthenticated: false, isLoading: false, error: null });
+    set({ 
+      user: null, 
+      isAuthenticated: false, 
+      isLoading: false, 
+      error: null 
+    });
 
-    // Optionally call logout API in background if token exists
+    // 3. Attempt API call in background if we had a token
+    // DO NOT await this to ensure immediate logout in UI
     if (token) {
-      try {
-        await fetch(`${API_URL}/api/users/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-      } catch (err) {
-        console.error('Background logout failed:', err);
-      }
+      const cleanApiUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+      fetch(`${cleanApiUrl}/api/users/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }).catch(err => {
+        console.error('Background logout API call failed:', err);
+      });
     }
   },
 

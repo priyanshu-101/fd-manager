@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { User, LogOut, Settings, ChevronDown, Lock } from 'lucide-react';
 import { EditProfileModal } from '@/components/auth/EditProfileModal';
@@ -6,21 +7,26 @@ import { ChangePasswordModal } from '@/components/auth/ChangePasswordModal';
 
 export function Navbar() {
   const { user, logout, isLoading } = useAuthStore();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
   const handleLogout = async () => {
-    setIsMenuOpen(false);
     try {
+      setIsMenuOpen(false);
       await logout();
+      navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if it fails, make sure we close the menu and try to navigate
+      setIsMenuOpen(false);
+      navigate('/login');
     }
   };
 
   return (
-    <div className="flex items-center justify-end px-6 py-4 bg-ink-900/50 backdrop-blur-sm border-b border-ink-700/30">
+    <div className="flex items-center justify-end px-6 py-4 bg-ink-900/50 backdrop-blur-sm border-b border-ink-700/30 relative z-40">
       <div className="relative">
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -43,10 +49,10 @@ export function Navbar() {
         {isMenuOpen && (
           <>
             <div 
-              className="fixed inset-0 z-10" 
+              className="fixed inset-0 z-[90]" 
               onClick={() => setIsMenuOpen(false)}
             />
-            <div className="absolute right-0 mt-2 w-48 bg-ink-900 border border-ink-700/50 rounded-xl shadow-2xl z-20 overflow-hidden py-1">
+            <div className="absolute right-0 mt-2 w-48 bg-ink-900 border border-ink-700/50 rounded-xl shadow-2xl z-[100] overflow-hidden py-1">
               <button
                 onClick={() => {
                   setIsMenuOpen(false);
@@ -69,11 +75,10 @@ export function Navbar() {
               </button>
               <button
                 onClick={handleLogout}
-                disabled={isLoading}
                 className="w-full flex items-center gap-3 px-4 py-2 text-sm text-crimson-400 hover:bg-crimson-500/10 transition-colors"
               >
                 <LogOut size={16} />
-                {isLoading ? 'Logging out...' : 'Logout'}
+                Logout
               </button>
             </div>
           </>
