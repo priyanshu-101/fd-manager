@@ -35,6 +35,8 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         <Input
           label="Full Name"
           type="text"
+          name="name"
+          autoComplete="name"
           placeholder="John Doe"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -45,6 +47,8 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         <Input
           label="Email"
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="your@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -55,6 +59,8 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         <Input
           label="Password"
           type="password"
+          name="password"
+          autoComplete="new-password"
           placeholder="At least 6 characters"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -65,6 +71,8 @@ export function SignupForm({ onSuccess }: SignupFormProps) {
         <Input
           label="Confirm Password"
           type="password"
+          name="confirmPassword"
+          autoComplete="new-password"
           placeholder="Confirm your password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}

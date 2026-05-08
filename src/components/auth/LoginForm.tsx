@@ -33,6 +33,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <Input
           label="Email"
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="your@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -43,6 +45,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <Input
           label="Password"
           type="password"
+          name="password"
+          autoComplete="current-password"
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
